@@ -234,3 +234,30 @@ The scan generates a redacted JSON report at:
     reports/gitleaks-report.json
 
 The GitHub Actions security pipeline automatically runs secret detection on pushes and pull requests targeting `main`. The workflow fails when a potential secret is detected.
+
+
+## Containerization
+
+SecureForge is containerized with Docker using a minimal Python 3.12 slim image.
+
+Security controls include:
+
+- Running the application as a dedicated non-root `secureforge` user
+- Excluding sensitive and unnecessary files with `.dockerignore`
+- Passing credentials through environment variables at runtime
+- Exposing only the application port required by FastAPI
+
+Build the image:
+
+    docker build -t secureforge:latest .
+
+Run the container:
+
+    docker run --rm -p 8000:8000 \
+      -e DEMO_USERNAME=secureforge-demo-user \
+      -e DEMO_PASSWORD=example-local-demo-password \
+      secureforge:latest
+
+Verify the container health endpoint:
+
+    curl http://127.0.0.1:8000/health

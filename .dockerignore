@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+__pycache__
+*.pyc
+.pytest_cache
+reports
+tests
+docs
+terraform
+.vscode
+.DS_Store

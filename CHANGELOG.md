@@ -6,6 +6,11 @@ All significant changes to SecureForge will be documented in this file.
 
 ### Added
 
+- Added Docker containerization for the FastAPI application
+- Added a dedicated non-root `secureforge` runtime user
+- Added `.dockerignore` exclusions for sensitive and unnecessary files
+- Verified runtime environment-variable injection inside the container
+
 - Added Gitleaks secret detection for repository content and Git history
 - Added a reusable redacted secret-scanning script
 - Integrated secret detection into GitHub Actions

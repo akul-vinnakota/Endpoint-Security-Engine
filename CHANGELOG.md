@@ -6,6 +6,11 @@ All significant changes to SecureForge will be documented in this file.
 
 ### Added
 
+- Added Trivy container vulnerability scanning
+- Added CI blocking for fixable HIGH and CRITICAL container findings
+- Added JSON container vulnerability reporting
+- Hardened the Docker image with a multi-stage runtime build to reduce unnecessary packages and attack surface
+
 - Added Docker containerization for the FastAPI application
 - Added a dedicated non-root `secureforge` runtime user
 - Added `.dockerignore` exclusions for sensitive and unnecessary files

@@ -261,3 +261,22 @@ Run the container:
 Verify the container health endpoint:
 
     curl http://127.0.0.1:8000/health
+
+
+## Container Vulnerability Scanning
+
+SecureForge uses Trivy to scan the Docker image for HIGH and CRITICAL vulnerabilities before deployment.
+
+The scan:
+
+- Builds the SecureForge container image
+- Uses precise vulnerability detection
+- Ignores vulnerabilities with no available fix
+- Blocks the pipeline on fixable HIGH or CRITICAL findings
+- Generates a JSON report at `reports/trivy-report.json`
+
+Run the scan locally:
+
+    ./scripts/run_trivy.sh
+
+The runtime image also uses a multi-stage Docker build to reduce unnecessary packages and shrink the attack surface.

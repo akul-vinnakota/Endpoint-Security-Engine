@@ -42,3 +42,6 @@ jobs:
 
       - name: Run secret detection scan
         run: ./scripts/run_gitleaks.sh
+
+      - name: Run container vulnerability scan
+        run: ./scripts/run_trivy.sh

@@ -1,282 +1,398 @@
-# SecureForge
+# Endpoint Security Engine
 
-SecureForge is a DevSecOps cloud security pipeline designed to identify insecure code, vulnerable dependencies, exposed credentials, container vulnerabilities, and cloud infrastructure misconfigurations before deployment.
+Microsoft reports processing more than 165 trillion security signals every day. At hyperscale, security infrastructure must do more than detect threats it must remain operational when components, health systems, dependencies, and deployments fail.
 
-## Project Objective
+This project investigates how Windows endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
 
-The objective of SecureForge is to demonstrate how security controls can be integrated directly into the software development lifecycle rather than applied only after an application reaches production.
+---
 
-The pipeline will automatically evaluate source code, application dependencies, secrets, containers, and Infrastructure as Code configurations. High-risk findings will block insecure builds and generate actionable remediation reports.
+## Objective
 
-## Planned Security Capabilities
+Build and benchmark a resilient Windows security architecture designed to prevent:
 
-- Static application security testing
-- Python dependency vulnerability scanning
-- Hardcoded secret detection
-- Docker container vulnerability scanning
-- Terraform security scanning
-- GitHub Actions security gates
-- AWS cloud security monitoring
-- Automated security reporting
-- Incident-response playbooks
-- OWASP and MITRE ATT&CK mappings
+- faulty health decisions from unnecessarily removing healthy capacity,
+- unsafe security changes from propagating across an endpoint fleet,
+- shared failure domains from defeating redundant systems,
+- parser or detection failures from destabilizing the host,
+- retry, restart, and failover logic from amplifying an existing outage.
 
-## Planned Technology Stack
+The system is being designed around fault isolation, independent health paths, health-gated rollout, rollback, graceful degradation, and redundant failover.
 
-- Python
-- FastAPI
+---
+
+## Core Engineering Problem
+
+A resilient security platform should not allow one failure to become thousands.
+
+```text
+Fault
+  ↓
+Detect
+  ↓
+Contain
+  ↓
+Degrade Safely
+  ↓
+Recover / Fail Over
+  ↓
+Preserve Fleet Availability
+```
+
+The central question of this project is:
+
+> **Can endpoint security continue detecting threats while ensuring that failures in telemetry, detection logic, health monitoring, deployment, or recovery remain contained?**
+
+---
+
+## Target Architecture
+
+```text
+                    WINDOWS ENDPOINT
+
+             ┌────────────┬────────────┐
+             ↓            ↓            ↓
+            ETW       Event Logs    Future Sensors
+             └────────────┼────────────┘
+                          ↓
+                  SENSOR ADAPTERS
+                          ↓
+                 COMMON EVENT MODEL
+                          ↓
+                  .NET CORE ENGINE
+                          │
+            ┌─────────────┼─────────────┐
+            ↓             ↓             ↓
+        Normalize      Detect        Enrich
+            └─────────────┼─────────────┘
+                          ↓
+                   SAFE RULE ENGINE
+                          ↓
+                   SECURITY FINDING
+                          ↓
+                 ENDPOINT HEALTH
+                          │
+             ┌────────────┼────────────┐
+             ↓            ↓            ↓
+          Healthy      Degraded      Failed
+             │            │            │
+             ↓            ↓            ↓
+          Continue     Shed Load    Fail Over
+                          │
+                          ↓
+                  FLEET HEALTH GATE
+                          ↓
+              Canary → Expand → Rollback
+```
+
+---
+
+## Resilience Model
+
+### Fault Isolation
+
+A parser, rule, sensor, or detection failure should remain inside its own process or component boundary rather than destabilizing the operating system.
+
+### Independent Health Paths
+
+Process liveness, service readiness, dependency health, and fleet capacity are treated as separate signals.
+
+A failed dependency should not automatically cause otherwise healthy processes to restart and reduce available capacity.
+
+### Safe Rollout
+
+Security changes are deployed progressively:
+
+```text
+New Version / Rule
+        ↓
+      Canary
+        ↓
+ Health Evaluation
+        ↓
+   ┌────┴────┐
+   ↓         ↓
+Healthy    Degraded
+   ↓         ↓
+Expand    Stop Rollout
+             ↓
+          Roll Back
+```
+
+### Last-Known-Good Recovery
+
+Failed or unhealthy changes should revert to a previously validated configuration rather than leaving endpoints in an unknown state.
+
+### Redundant Failover
+
+Backup systems must not share the exact failure mode they are intended to protect against.
+
+```text
+Primary Path     Backup Path
+     │                │
+Failure Domain A  Failure Domain B
+     │                │
+     └──── Failover ──┘
+```
+
+---
+
+## Planned Failure Testing
+
+The project will deliberately introduce controlled failures including:
+
+- malformed detection rules,
+- parser crashes,
+- stalled telemetry consumers,
+- overloaded event queues,
+- failed health signals,
+- unavailable downstream dependencies,
+- excessive retry behavior,
+- partial fleet degradation,
+- failed canary deployments,
+- unavailable primary capacity,
+- failover-path failures.
+
+The goal is not to prove that failures never happen.
+
+The goal is to prove that:
+
+> **one failure stays one failure.**
+
+---
+
+## Performance Benchmarking
+
+The platform will produce reproducible measurements for:
+
+- events processed per second,
+- p50 / p95 / p99 processing latency,
+- CPU utilization,
+- memory utilization,
+- queue depth,
+- dropped-event rate,
+- recovery time,
+- detection-engine availability,
+- canary health,
+- rollout failure rate,
+- failover success rate.
+
+Performance claims will be based on measured results rather than theoretical estimates.
+
+---
+
+## Technology Stack
+
+### Endpoint and Detection Engine
+
+- C#
+- .NET 10
+- Windows ETW
+- Windows Event Log
+- ASP.NET Core
+- xUnit
+
+### Automation
+
+- PowerShell
 - GitHub Actions
-- Docker
-- Terraform
-- AWS
-- Semgrep or Bandit
-- pip-audit
-- Gitleaks
+- GitHub Copilot CLI
+
+### Cloud and Observability
+
+- Microsoft Azure
+- Azure Monitor
+- Application Insights
+- Azure Storage
+- Azure Key Vault
+- Managed Identity
+
+### Developer and Security Interface
+
+- TypeScript
+- React
+- Node.js
+
+### Security Tooling
+
 - Trivy
-- Checkov
-- Pytest
+- Gitleaks
+- dependency vulnerability scanning
+- static analysis
+- container security scanning
 
-## Planned Architecture
+### Research Track
 
-Developer Commit
-    |
-    v
-GitHub Repository
-    |
-    v
-GitHub Actions Security Pipeline
-    |
-    +--> Source Code Scan
-    +--> Dependency Scan
-    +--> Secret Scan
-    +--> Container Scan
-    +--> Terraform Scan
-    |
-    v
-Security Gate
-    |
-    +--> Pass: Allow deployment
-    |
-    +--> Fail: Block deployment and generate report
+- eBPF for Windows
+- VBS-backed protection of critical trust state
+- high-throughput user-mode telemetry
+- safe dynamic detection-rule execution
 
-## Repository Structure
+---
 
-secureforge-devsecops/
-├── .github/
-│   └── workflows/
-├── app/
-├── docs/
-├── reports/
-├── scripts/
-├── security/
-├── terraform/
-├── tests/
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── SECURITY.md
-├── pyproject.toml
-├── requirements-dev.txt
-└── requirements.txt
+## .NET Architecture
 
-## Development Roadmap
+The detection platform is intentionally separated from Windows-specific telemetry.
 
-### Phase 1 — Application Foundation
+```text
+SecurityAutomation.Core
+        ↑
+        │
+SecurityAutomation.Windows
+```
 
-- Create the FastAPI application
-- Add health-check and demonstration endpoints
-- Add unit tests
-- Containerize the application
+### `SecurityAutomation.Core`
 
-### Phase 2 — DevSecOps Pipeline
+Responsible for:
 
-- Add static-code scanning
-- Add dependency scanning
-- Add secret detection
-- Add container scanning
-- Add security gates to GitHub Actions
+- common event models,
+- detection logic,
+- rule evaluation,
+- event normalization,
+- enrichment,
+- health models,
+- failure classification.
 
-### Phase 3 — Cloud Security
+The core engine must not depend directly on Windows telemetry APIs.
 
-- Build AWS infrastructure with Terraform
-- Detect Infrastructure as Code misconfigurations
-- Enable AWS security logging
-- Analyze CloudTrail security events
+### `SecurityAutomation.Windows`
 
-### Phase 4 — Detection and Incident Response
+Responsible for:
 
-- Detect suspicious AWS activity
-- Map detections to MITRE ATT&CK
-- Generate incident reports
-- Create remediation playbooks
+- ETW collection,
+- Windows Event Log ingestion,
+- Win32 integrations,
+- translating Windows telemetry into the common event model.
+
+This allows telemetry sources to evolve without requiring the detection engine to be rewritten.
+
+---
+
+## Existing Security Foundation
+
+The repository began as a DevSecOps security pipeline and already contains working security controls that will be incorporated into the larger platform.
+
+### Implemented
+
+- FastAPI security demonstration service
+- automated Python tests
+- Bandit static analysis
+- `pip-audit` dependency scanning
+- Gitleaks secret detection
+- Docker containerization
+- non-root container runtime
+- multi-stage Docker builds
+- Trivy container vulnerability scanning
+- GitHub Actions security gates
+- JSON security reports
+
+These components remain useful as examples of build-time security automation while the repository evolves toward the Windows/.NET resilience architecture.
+
+---
+
+## Project Roadmap
+
+### Phase 1 — .NET Core Architecture
+
+- Create the .NET solution
+- Define the common security-event model
+- Separate platform logic from Windows telemetry
+- Build initial detection interfaces
+- Establish automated tests
+
+### Phase 2 — Windows Telemetry
+
+- Integrate ETW
+- Consume process and system telemetry
+- Normalize Windows events
+- Build synthetic event generators
+- Benchmark event throughput
+
+### Phase 3 — Detection Engine
+
+- Implement rule processing
+- Add security-event enrichment
+- Introduce strict rule validation
+- Add resource limits
+- Implement last-known-good rule recovery
+
+### Phase 4 — Health and Failure Containment
+
+- Separate liveness and readiness signals
+- Build endpoint health models
+- Introduce circuit breakers
+- Implement backpressure and load shedding
+- Test dependency failures
+- Test process failures
+
+### Phase 5 — Fleet Safety
+
+- Build fleet-health aggregation
+- Implement health-gated canary rollout
+- Stop unhealthy deployments automatically
+- Implement rollback
+- Introduce redundant failure domains
+- Test automated failover
+
+### Phase 6 — Azure Integration
+
+- Send health and security telemetry to Azure
+- Add Azure observability
+- Protect sensitive state with managed identity and Key Vault
+- Build fleet-level metrics
+- Implement distributed health monitoring
+
+### Phase 7 — Security Operations Interface
+
+- Build a TypeScript/React dashboard
+- Display endpoint health
+- Display security findings
+- Visualize rollout state
+- Visualize failure-domain health
+- Show performance benchmarks
+
+### Phase 8 — Adversarial and Resilience Testing
+
+- malformed-update testing,
+- parser crash testing,
+- dependency-outage testing,
+- retry-storm testing,
+- health-check failure testing,
+- canary failure testing,
+- failover testing,
+- sustained high-volume telemetry testing.
+
+---
 
 ## Current Status
 
-Day 1: Repository initialized and project structure created.
+The original DevSecOps security foundation is complete through container vulnerability scanning.
+
+Current development is focused on the **C#/.NET platform foundation and Windows telemetry architecture**.
+
+---
+
+## Research Thesis
+
+Modern security infrastructure must be designed under the assumption that components will fail.
+
+The engineering challenge is therefore not simply:
+
+**Can the platform detect threats?**
+
+It is:
+
+**Can the platform detect threats while preventing its own failures, recovery mechanisms, and deployment systems from becoming sources of fleet-wide instability?**
+
+---
 
 ## Disclaimer
 
-This project is intended exclusively for defensive cybersecurity education, controlled testing, and portfolio development.
+This repository is intended exclusively for defensive security engineering, authorized testing, systems research, and controlled resilience experimentation.
+
+All failure injection and security testing should be performed only in systems explicitly authorized for testing.
+
+---
 
 ## License
 
 This project is licensed under the MIT License.
-
-## Running the Application
-
-Install the project dependencies:
-
-```bash
-pip install -r requirements.txt -r requirements-dev.txt
-```
-
-Start the FastAPI development server:
-
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Available endpoints:
-
-- `GET /` — confirms that the SecureForge API is running
-- `GET /health` — returns the service health status
-- `GET /docs` — opens the interactive Swagger API documentation
-
-## Running Tests
-
-Run the automated test suite:
-
-```bash
-python -m pytest -v
-```
-
-## Current Progress
-
-- Day 1: Initialized the repository and project structure
-- Day 2: Built the FastAPI foundation, health endpoint, and automated tests
-
-
-## Security Demonstration Endpoint
-
-SecureForge includes an intentionally insecure authentication endpoint for authorized security testing.
-
-- `GET /demo-login`
-- Uses environment variables for demonstration credentials
-- Returns `200 OK` for valid credentials
-- Returns `401 Unauthorized` for invalid credentials
-- Returns `503 Service Unavailable` when credentials are not configured
-
-> Note: This endpoint is for controlled demonstrations only. Credentials must be supplied through environment variables and never committed.
-
-
-## Static Security Scanning
-
-SecureForge uses Bandit to scan Python source code for common security weaknesses.
-
-Run the scan locally:
-
-    ./scripts/run_bandit.sh
-
-The scan generates a JSON report at:
-
-    reports/bandit-report.json
-
-Bandit previously detected the intentionally hardcoded demonstration password as a B105 finding. The credential was remediated by moving it to environment-based configuration, and the scan now passes with zero findings.
-
-## Security CI Pipeline
-
-GitHub Actions automatically performs the following checks on pushes and pull requests targeting `main`:
-
-1. Installs production and development dependencies
-2. Runs the automated pytest suite
-3. Runs the Bandit static security scan
-4. Fails the workflow when a security finding is detected
-
-The pipeline now passes after remediating the hardcoded credential.
-
-
-## Environment Configuration
-
-SecureForge reads demonstration credentials from environment variables rather than storing them in source code.
-
-Set local demonstration values before starting the application:
-
-    export DEMO_USERNAME=secureforge-demo-user
-    export DEMO_PASSWORD=choose-a-local-demo-password
-
-The `.env.example` file contains public placeholders only. Real credentials and local `.env` files must never be committed.
-
-
-## Dependency Vulnerability Scanning
-
-SecureForge uses `pip-audit` to check Python production dependencies against known vulnerability databases.
-
-Run the scan locally:
-
-    ./scripts/run_pip_audit.sh
-
-The scan generates a JSON report at:
-
-    reports/pip-audit-report.json
-
-The GitHub Actions security pipeline runs this check automatically and blocks the build when a known vulnerable dependency is detected.
-
-
-## Secret Detection
-
-SecureForge uses Gitleaks to scan Git history and repository content for exposed credentials, API keys, tokens, passwords, and other sensitive information.
-
-Run the scan locally:
-
-    ./scripts/run_gitleaks.sh
-
-The scan generates a redacted JSON report at:
-
-    reports/gitleaks-report.json
-
-The GitHub Actions security pipeline automatically runs secret detection on pushes and pull requests targeting `main`. The workflow fails when a potential secret is detected.
-
-
-## Containerization
-
-SecureForge is containerized with Docker using a minimal Python 3.12 slim image.
-
-Security controls include:
-
-- Running the application as a dedicated non-root `secureforge` user
-- Excluding sensitive and unnecessary files with `.dockerignore`
-- Passing credentials through environment variables at runtime
-- Exposing only the application port required by FastAPI
-
-Build the image:
-
-    docker build -t secureforge:latest .
-
-Run the container:
-
-    docker run --rm -p 8000:8000 \
-      -e DEMO_USERNAME=secureforge-demo-user \
-      -e DEMO_PASSWORD=example-local-demo-password \
-      secureforge:latest
-
-Verify the container health endpoint:
-
-    curl http://127.0.0.1:8000/health
-
-
-## Container Vulnerability Scanning
-
-SecureForge uses Trivy to scan the Docker image for HIGH and CRITICAL vulnerabilities before deployment.
-
-The scan:
-
-- Builds the SecureForge container image
-- Uses precise vulnerability detection
-- Ignores vulnerabilities with no available fix
-- Blocks the pipeline on fixable HIGH or CRITICAL findings
-- Generates a JSON report at `reports/trivy-report.json`
-
-Run the scan locally:
-
-    ./scripts/run_trivy.sh
-
-The runtime image also uses a multi-stage Docker build to reduce unnecessary packages and shrink the attack surface.

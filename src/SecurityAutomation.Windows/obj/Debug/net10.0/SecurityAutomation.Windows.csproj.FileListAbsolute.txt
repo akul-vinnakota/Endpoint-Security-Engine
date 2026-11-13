@@ -1,0 +1,16 @@
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/bin/Debug/net10.0/SecurityAutomation.Windows.deps.json
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/bin/Debug/net10.0/SecurityAutomation.Windows.dll
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/bin/Debug/net10.0/SecurityAutomation.Windows.pdb
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/bin/Debug/net10.0/SecurityAutomation.Core.dll
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/bin/Debug/net10.0/SecurityAutomation.Core.pdb
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.csproj.AssemblyReference.cache
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.AssemblyInfoInputs.cache
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.AssemblyInfo.cs
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.csproj.CoreCompileInputs.cache
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.sourcelink.json
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/Security.5157C411.Up2Date
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.dll
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/refint/SecurityAutomation.Windows.dll
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/SecurityAutomation.Windows.pdb
+/workspaces/SecureForge-DevSecOps/src/SecurityAutomation.Windows/obj/Debug/net10.0/ref/SecurityAutomation.Windows.dll

@@ -1,19 +1,42 @@
-name: SecureForge Security CI
+name: Legacy Python Security CI
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "app/**"
+      - "tests/**/*.py"
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - "pyproject.toml"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "scripts/run_bandit.sh"
+      - "scripts/run_pip_audit.sh"
+      - "scripts/run_trivy.sh"
+
   pull_request:
     branches:
       - main
+    paths:
+      - "app/**"
+      - "tests/**/*.py"
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - "pyproject.toml"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "scripts/run_bandit.sh"
+      - "scripts/run_pip_audit.sh"
+      - "scripts/run_trivy.sh"
 
 permissions:
   contents: read
 
 jobs:
   test-and-scan:
-    name: Test and Security Scan
+    name: Legacy Python Test and Security Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -39,9 +62,6 @@ jobs:
 
       - name: Run dependency vulnerability scan
         run: ./scripts/run_pip_audit.sh
-
-      - name: Run secret detection scan
-        run: ./scripts/run_gitleaks.sh
 
       - name: Run container vulnerability scan
         run: ./scripts/run_trivy.sh

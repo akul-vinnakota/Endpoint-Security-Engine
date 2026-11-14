@@ -236,3 +236,7 @@ reports/*.sarif
 reports/*.html
 .DS_Store
 .vscode/
+
+# .NET build artifacts
+**/bin/
+**/obj/

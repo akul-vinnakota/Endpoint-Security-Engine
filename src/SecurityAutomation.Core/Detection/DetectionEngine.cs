@@ -14,8 +14,6 @@ public sealed class DetectionEngine
 
     public IReadOnlyCollection<SecurityFinding> Evaluate(SecurityEvent securityEvent)
     {
-        ArgumentNullException.ThrowIfNull(securityEvent);
-
         List<SecurityFinding>? findings = null;
 
         foreach (var rule in _rules)

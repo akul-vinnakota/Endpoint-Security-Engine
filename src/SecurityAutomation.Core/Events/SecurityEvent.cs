@@ -12,7 +12,7 @@ public enum SecurityEventType
     Health
 }
 
-public sealed record SecurityEvent(
+public readonly record struct SecurityEvent(
     Guid EventId,
     DateTimeOffset Timestamp,
     string Source,

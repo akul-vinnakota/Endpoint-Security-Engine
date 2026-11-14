@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SecurityAutomation.Core.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+01d8b64da058a784d551e7aa1bf7bcbaf2c799a2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2aeb22b91fa29ef86918dab1be8f9a04badd2de6")]
 [assembly: System.Reflection.AssemblyProductAttribute("SecurityAutomation.Core.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SecurityAutomation.Core.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

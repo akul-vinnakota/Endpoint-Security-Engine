@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/SecurityAutomation.Benchmarks/SecurityAutomation.Benchmarks.csproj" />
     <Project Path="src/SecurityAutomation.Core/SecurityAutomation.Core.csproj" />
     <Project Path="src/SecurityAutomation.Windows/SecurityAutomation.Windows.csproj" />
   </Folder>

@@ -4,7 +4,7 @@ namespace SecurityAutomation.Core.Detection;
 
 public sealed class DetectionEngine
 {
-    private readonly IReadOnlyCollection<IDetectionRule> _rules;
+    private readonly IDetectionRule[] _rules;
 
     public DetectionEngine(IEnumerable<IDetectionRule> rules)
     {
@@ -16,8 +16,17 @@ public sealed class DetectionEngine
     {
         ArgumentNullException.ThrowIfNull(securityEvent);
 
-        return _rules
-            .SelectMany(rule => rule.Evaluate(securityEvent))
-            .ToArray();
+        List<SecurityFinding>? findings = null;
+
+        foreach (var rule in _rules)
+        {
+            foreach (var finding in rule.Evaluate(securityEvent))
+            {
+                findings ??= new List<SecurityFinding>();
+                findings.Add(finding);
+            }
+        }
+
+        return findings is null ? Array.Empty<SecurityFinding>() : findings;
     }
 }

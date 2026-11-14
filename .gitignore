@@ -236,3 +236,5 @@ reports/*.sarif
 reports/*.html
 .DS_Store
 .vscode/
+**/bin/
+**/obj/

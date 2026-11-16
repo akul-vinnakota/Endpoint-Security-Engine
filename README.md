@@ -1,8 +1,8 @@
 # Endpoint Security Engine
 
-Microsoft reports processing more than 165 trillion security signals every day. At hyperscale, security infrastructure must do more than detect threats it must remain operational when components, health systems, dependencies, and deployments fail.
+At hyperscale companies process trillions of security signals everyday. Security infrastructure must remain operational when components, health systems, dependencies, and deployments fail.
 
-This project investigates how Windows endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
+This project investigates how endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
 
 ---
 

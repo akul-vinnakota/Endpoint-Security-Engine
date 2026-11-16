@@ -1,6 +1,6 @@
 # Endpoint Security Engine
 
-This project investigates how Windows endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
+This project investigates how endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
 
 ---
 

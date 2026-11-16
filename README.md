@@ -1,6 +1,6 @@
 # Endpoint Security Engine
 
-This project investigates how endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
+This project investigates how endpoint security infrastructure can contain failures before they propagate into outages.
 
 ---
 
@@ -60,8 +60,6 @@ The system is being designed around fault isolation, independent health paths, h
 
 ---
 
-## Resilience Model
-
 ### Fault Isolation
 
 A parser, rule, sensor, or detection failure should remain inside its own process or component boundary rather than destabilizing the operating system.
@@ -91,10 +89,6 @@ Expand    Stop Rollout
              ↓
           Roll Back
 ```
-
-### Last-Known-Good Recovery
-
-Failed or unhealthy changes should revert to a previously validated configuration rather than leaving endpoints in an unknown state.
 
 ### Redundant Failover
 
@@ -192,18 +186,6 @@ The platform will produce reproducible measurements for:
 - safe dynamic detection-rule execution
 
 ---
-
-### `SecurityAutomation.Core`
-
-Responsible for:
-
-- common event models,
-- detection logic,
-- rule evaluation,
-- event normalization,
-- enrichment,
-- health models,
-- failure classification.
 
 ### Implemented
 

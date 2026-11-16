@@ -36,12 +36,6 @@ Recover / Fail Over
 Preserve Fleet Availability
 ```
 
-The central question of this project is:
-
-> **Can endpoint security continue detecting threats while ensuring that failures in telemetry, detection logic, health monitoring, deployment, or recovery remain contained?**
-
----
-
 ## Target Architecture
 
 ```text

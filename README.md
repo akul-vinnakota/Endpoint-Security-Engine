@@ -18,24 +18,6 @@ The system is being designed around fault isolation, independent health paths, h
 
 ---
 
-## Core Engineering Problem
-
-A resilient security platform should not allow one failure to become thousands.
-
-```text
-Fault
-  ↓
-Detect
-  ↓
-Contain
-  ↓
-Degrade Safely
-  ↓
-Recover / Fail Over
-  ↓
-Preserve Fleet Availability
-```
-
 ## Target Architecture
 
 ```text
@@ -144,14 +126,6 @@ The project will deliberately introduce controlled failures including:
 - unavailable primary capacity,
 - failover-path failures.
 
-The goal is not to prove that failures never happen.
-
-The goal is to prove that:
-
-> **one failure stays one failure.**
-
----
-
 ## Performance Benchmarking
 
 The platform will produce reproducible measurements for:
@@ -167,8 +141,6 @@ The platform will produce reproducible measurements for:
 - canary health,
 - rollout failure rate,
 - failover success rate.
-
-Performance claims will be based on measured results rather than theoretical estimates.
 
 ---
 
@@ -221,17 +193,6 @@ Performance claims will be based on measured results rather than theoretical est
 
 ---
 
-## .NET Architecture
-
-The detection platform is intentionally separated from Windows-specific telemetry.
-
-```text
-SecurityAutomation.Core
-        ↑
-        │
-SecurityAutomation.Windows
-```
-
 ### `SecurityAutomation.Core`
 
 Responsible for:
@@ -243,25 +204,6 @@ Responsible for:
 - enrichment,
 - health models,
 - failure classification.
-
-The core engine must not depend directly on Windows telemetry APIs.
-
-### `SecurityAutomation.Windows`
-
-Responsible for:
-
-- ETW collection,
-- Windows Event Log ingestion,
-- Win32 integrations,
-- translating Windows telemetry into the common event model.
-
-This allows telemetry sources to evolve without requiring the detection engine to be rewritten.
-
----
-
-## Existing Security Foundation
-
-The repository began as a DevSecOps security pipeline and already contains working security controls that will be incorporated into the larger platform.
 
 ### Implemented
 
@@ -277,114 +219,3 @@ The repository began as a DevSecOps security pipeline and already contains worki
 - GitHub Actions security gates
 - JSON security reports
 
-These components remain useful as examples of build-time security automation while the repository evolves toward the Windows/.NET resilience architecture.
-
----
-
-## Project Roadmap
-
-### Phase 1 — .NET Core Architecture
-
-- Create the .NET solution
-- Define the common security-event model
-- Separate platform logic from Windows telemetry
-- Build initial detection interfaces
-- Establish automated tests
-
-### Phase 2 — Windows Telemetry
-
-- Integrate ETW
-- Consume process and system telemetry
-- Normalize Windows events
-- Build synthetic event generators
-- Benchmark event throughput
-
-### Phase 3 — Detection Engine
-
-- Implement rule processing
-- Add security-event enrichment
-- Introduce strict rule validation
-- Add resource limits
-- Implement last-known-good rule recovery
-
-### Phase 4 — Health and Failure Containment
-
-- Separate liveness and readiness signals
-- Build endpoint health models
-- Introduce circuit breakers
-- Implement backpressure and load shedding
-- Test dependency failures
-- Test process failures
-
-### Phase 5 — Fleet Safety
-
-- Build fleet-health aggregation
-- Implement health-gated canary rollout
-- Stop unhealthy deployments automatically
-- Implement rollback
-- Introduce redundant failure domains
-- Test automated failover
-
-### Phase 6 — Azure Integration
-
-- Send health and security telemetry to Azure
-- Add Azure observability
-- Protect sensitive state with managed identity and Key Vault
-- Build fleet-level metrics
-- Implement distributed health monitoring
-
-### Phase 7 — Security Operations Interface
-
-- Build a TypeScript/React dashboard
-- Display endpoint health
-- Display security findings
-- Visualize rollout state
-- Visualize failure-domain health
-- Show performance benchmarks
-
-### Phase 8 — Adversarial and Resilience Testing
-
-- malformed-update testing,
-- parser crash testing,
-- dependency-outage testing,
-- retry-storm testing,
-- health-check failure testing,
-- canary failure testing,
-- failover testing,
-- sustained high-volume telemetry testing.
-
----
-
-## Current Status
-
-The original DevSecOps security foundation is complete through container vulnerability scanning.
-
-Current development is focused on the **C#/.NET platform foundation and Windows telemetry architecture**.
-
----
-
-## Research Thesis
-
-Modern security infrastructure must be designed under the assumption that components will fail.
-
-The engineering challenge is therefore not simply:
-
-**Can the platform detect threats?**
-
-It is:
-
-**Can the platform detect threats while preventing its own failures, recovery mechanisms, and deployment systems from becoming sources of fleet-wide instability?**
-
----
-
-## Disclaimer
-
-This repository is intended exclusively for defensive security engineering, authorized testing, systems research, and controlled resilience experimentation.
-
-All failure injection and security testing should be performed only in systems explicitly authorized for testing.
-
----
-
-## License
-
-This project is licensed under the MIT License.

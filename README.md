@@ -1,14 +1,12 @@
 # Endpoint Security Engine
 
-Microsoft reports processing more than 165 trillion security signals every day. At hyperscale, security infrastructure must do more than detect threats it must remain operational when components, health systems, dependencies, and deployments fail.
-
 This project investigates how Windows endpoint security infrastructure can contain failures before they propagate into fleet-wide outages.
 
 ---
 
 ## Objective
 
-Build and benchmark a resilient Windows security architecture designed to prevent:
+Build and benchmark security architecture designed to prevent:
 
 - faulty health decisions from unnecessarily removing healthy capacity,
 - unsafe security changes from propagating across an endpoint fleet,

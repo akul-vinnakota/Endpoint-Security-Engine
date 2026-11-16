@@ -21,7 +21,7 @@ The system is being designed around fault isolation, independent health paths, h
 ## Target Architecture
 
 ```text
-                    WINDOWS ENDPOINT
+                       ENDPOINT
 
              ┌────────────┬────────────┐
              ↓            ↓            ↓
